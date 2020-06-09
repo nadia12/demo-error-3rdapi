@@ -9,6 +9,8 @@ class UserController{
             password : req.body.password
         }
 
+        console.log(userobj)
+
         User.create(userobj)
         .then(data => {
             res.status(201).json({id:data.id, email: data.email})
@@ -18,13 +20,14 @@ class UserController{
         })
     }
 
-    static login(req, res){
+    static login(req, res, next){
         var user = {
             email: req.body.email,
             password : req.body.password
         }
         User.findOne({where : {email: user.email}})
         .then(data => {
+            console.log(data.password, user.password)
             if(data && bcrypt.compareSync(user.password, data.password)){
                 var access_token = jwt.sign({id : data.id, email:data.email}, process.env.SECRET)
                 res.status(200).json({access_token})
